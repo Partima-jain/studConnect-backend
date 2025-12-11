@@ -605,6 +605,7 @@ def upsert_peer_counsellor(
             "charges": peer.charges
         }
 
+
 @app.post("/peer-counsellors/{counsellor_id}/availability/upsert", tags=["peer-counsellors"])
 def upsert_peer_availability(
     counsellor_id: int,
