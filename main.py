@@ -696,6 +696,42 @@ def book_peer_counsellor_slot(
         db.add(booking)
         db.commit()
         db.refresh(booking)
+
+        try:
+            subject = "Your Peer Counselling Booking Request"
+            message = (
+                f"Dear {booking.user_email},\n\n"
+                f"Your booking request has been received for {booking.slot_date.strftime('%A, %d %B %Y at %H:%M')}.\n"
+                f"Status: {booking.payment_status}\n"
+                f"Peer Counsellor: {booking.counsellor_email}\n\n"
+                f"Thank you for booking with us!\n"
+            )
+            send_email(
+                to_email=booking.user_email,
+                subject=subject,
+                message=message
+            )
+        except Exception as e:
+            logging.error(f"Failed to send booking email to candidate: {e}")
+
+        try:
+            subject = "A New Booking Has Been Made With You"
+            message = (
+                f"Dear {booking.counsellor_email},\n\n"
+                f"A student ({booking.user_email}) has booked a session with you.\n"
+                f"Date & Time: {booking.slot_date.strftime('%A, %d %B %Y at %H:%M')}\n"
+                f"Status: {booking.payment_status}\n\n"
+                f"Please check your dashboard for details.\n\n"
+                f"Thank you for supporting students!\n"
+            )
+            send_email(
+                to_email=booking.counsellor_email,
+                subject=subject,
+                message=message
+            )
+        except Exception as e:
+            logging.error(f"Failed to send booking email to peer counsellor: {e}")
+
         return {
             "id": booking.id,
             "user_id": booking.user_id,
